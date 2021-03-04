@@ -42,9 +42,9 @@ BLQ
 PFIN
 	.BY 0
 PAG7
-	icl "paginas/p7.asm"	
+	icl "paginas/P7.ASM"	
 PAG4
-	icl "paginas/p4.asm"
+	icl "paginas/P4.ASM"
 DLS
     .BYTE $70,$70,$70,$46
     .WORD SHOW

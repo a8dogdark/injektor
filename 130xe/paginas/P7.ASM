@@ -4,7 +4,6 @@
 l_pag7=[.len pagina7]
 
 .proc pagina7,$0700
-kem_buffer =$b000
 INICIO
 	.by 0
 	.by [l_pag7+127]/128

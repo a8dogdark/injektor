@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compiler Mads",
+            "type": "shell",
+            "command": "mads",
+            "args": [ "${file}","-o:${fileBasenameNoExtension}.xex","-v","-l:${fileBasenameNoExtension}.lst"],
+            "problemMatcher": []
+        },{
+            "label": "Run Atari800",
+            "type": "shell",
+            "command": "atari800",
+            "args": [ "${fileBasenameNoExtension}.xex"],
+            "problemMatcher": []
+        },{
+            "label": "Run Altirra",
+            "type": "shell",
+            "command": "wine",
+            "args": [ "/home/dogdark/Documentos/Altirra/Altirra64.exe","${fileBasenameNoExtension}.xex"],
+            "problemMatcher": []
+        },{
+            "label": "Run Altirra Win",
+            "type": "shell",
+            "command": "C:/Program Files/Altirra-3.90/Altirra64.exe",
+            "args": [ "${fileBasenameNoExtension}.xex"],
+            "problemMatcher": []            
+        }
+    ]
+}
