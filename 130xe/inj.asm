@@ -45,13 +45,7 @@ PAG7
 	icl "paginas/P7.ASM"	
 PAG4
 	icl "paginas/P4.ASM"
-DLS
-    .BYTE $70,$70,$70,$46
-    .WORD SHOW
-	.BYTE $70,$70,$02,$70,$70,$02,$02,$70
-    .BYTE $70,$70,$06,$70,$70,$70,$02,$70
-    .BYTE $70,$70,$06,$70,$70,$70,$02,$41
-    .WORD DLS
+
 ; -------------------------
 ; DEFINICION DEL DISPLAY
 ; PARA DIRECTORIO
@@ -63,54 +57,44 @@ DLS
     .BYTE $70,$02,$02,$02,$02,$02,$02,$02
     .BYTE $02,$02,$41
     .WORD ?DIR
+DLS
+:3  .by $70
+    .by $46
+    .WORD SHOW
+:2	.by $70
+:10  .by $02
+:4  .by $70
+    .by $06,$70,$06
+    .by $41
+    .WORD DLS
 SHOW
-    .SB "NHP INJEKTOR VER "
-    .SB "6.0 "
-    .SB +128,"  THE LEECH & PARCHE NEGRO CHILE 1991 "
-    .SB " "
-    .SB +32,"RRRRRRRRRRRRRRRR"
-    .SB +128,"1"
-    .SB "2"
-    .SB +128,"3"
-    .SB "4"
-    .SB +128,"5"
-    .SB "6"
-    .SB +128,"7"
-    .SB "8"
-    .SB +128,"9"
-    .SB "0"
-    .SB +128,"1"
-    .SB "2"
-    .SB +128,"3"
-    .SB "4"
-    .SB +128,"5"
-    .SB "6"
-    .SB +128,"7"
-    .SB "8"
-    .SB +128,"9"
-    .SB "0"
-    .SB +32,"RRRR"
-    .SB +128,"NOMBRE CARATULA:"
-CRSR
-    .SB "_                   "
-    .SB "    "
-NAME
-    .SB "                    "
-    .SB +128,"FILE:"
+    .sb "dogdark injektor 130"
+    .sb +32,"QRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRE"
+    .sb "|DOGCOPY INJEKTOR 130XE V1.1 ATARI 2021|"
+    .sb +32,"ARRRRRRRRRRRRRRRWRRRRRRRRRRRRRRRRRRRRRRD"
+    .sb "|TITULO GENERAL | "
+titgen
+    .sb "******************** |"
+    .sb "|TITULO JUEGO   | "
+titgam
+    .sb "******************** |"
+    .sb "|FUENTE         | "
 FILE
-    .SB "_                   "
-    .SB "               "
-    .SB "      COPIAS "
-TOTALCOPIAS
-    .SB "0      "
-    .SB +128,"BYTES LEIDOS:"
-    .SB " "
+    .sb "******************** |"
+    .sb "|BYTES          | "
 BYTES
-    .SB "*****        "
-    .SB +128,"BLOQUES:"
-    .SB " "
+    .sb "*****                |"
+    .sb "|BLOQUES        | "
 BLOQUES
-    .SB "*** "
+    .sb "***                  |"
+    .sb "|COPIAS         | "
+TOTALCOPIAS
+    .sb "*                    |"
+    .sb +32,"ZRRRRRRRRRRRRRRRXRRRRRRRRRRRRRRRRRRRRRRC"
+namegen
+    .sb "--ACA VA EL TITULO--"
+namegam
+    .sb "--ACA VA EL TITULO--"
 ???DIR
     .SB "     DIRECTORIO     "
 ??DIR
@@ -158,26 +142,19 @@ RESTORE
     LDA #$20
     STA ??FILE,Y
     LDA #$00
-    STA NAME,Y
+    STA namegam,Y
     STA FILE,Y
+    sta titgam,y 
+    sta titgen,y
+    sta namegen,y
 	DEY
     BPL ?RESTORE
-    LDY #$17
-??RESTORE
-    LDA #$00
-    STA CRSR,Y
-    DEY
-    BPL ??RESTORE
-    LDY #$22
-???RESTORE
-    LDA #$00
-    STA FILE,Y
-    DEY
-    BPL ???RESTORE
     LDA #$3F
-    STA CRSR
+    STA titgam
+    sta titgen
     STA FILE
     LDA #$10
+    sta totalcopias
     LDY #$04
 RESNUM
     STA BYTES,Y
@@ -278,9 +255,9 @@ OPEN
     LDX #$10
     LDA #$03
     STA $0342,X
-    LDA # <?FILE
+    LDA # <??FILE
     STA $0344,X
-    LDA # >?FILE
+    LDA # >??FILE
     STA $0345,X
     LDA #$04
     STA $034A,X
@@ -616,7 +593,7 @@ PONDATA
     STA BLQ+2
     LDY #$13
 ?PONDATA
-	LDA NAME,Y
+	LDA namegam,Y
 	STA NME,Y
 	DEY
 	BPL ?PONDATA   
@@ -900,14 +877,37 @@ START
     LDY # >DLS
     STX $0230
     STY $0231
-    LDA #$90
-    STA $02C8
-    STA $02C6
-    LDA #$CA
-    STA $02C5
+    lda #$02
+    sta 710
+    sta 712
     JSR RESTORE
-    LDX # <CRSR
-    LDY # >CRSR
+;ingresamos titulo general
+    LDX # <titgen
+    LDY # >titgen
+    STX PCRSR
+    STY PCRSR+1
+    JSR RUTLEE
+    TYA
+    BEQ NOTITLEG
+    LSR 
+    STA RY+1
+    LDA #$0a
+    SEC
+    SBC RY+1
+    STA RY+1
+    LDX #$00
+    LDY RY+1
+WRITEG
+    LDA titgen,X
+    STA namegen,Y
+    INY
+    INX
+    CPX RY
+    BNE WRITEG
+NOTITLEG
+;ingresamos titul juego
+    LDX # <titgam
+    LDY # >titgam
     STX PCRSR
     STY PCRSR+1
     JSR RUTLEE
@@ -922,8 +922,8 @@ START
     LDX #$00
     LDY RY+1
 WRITE
-    LDA CRSR,X
-    STA NAME,Y
+    LDA titgam,X
+    STA namegam,Y
     INY
     INX
     CPX RY
