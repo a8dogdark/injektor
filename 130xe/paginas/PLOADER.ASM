@@ -1,7 +1,7 @@
 ;load_init =$CBFE
 load_init =$CC00
 ;
-l_load = [.len loader]
+l_load = [[.len loader]+24]
 
 .proc	loader,load_init
 BAFER = $0700
@@ -38,7 +38,7 @@ LSIOV
     .WO $0100
     .BY $00,$80
 DLIST
-    .BY $70,$70,$70,$47
+    .BY $70,$70,$70,$46
     .WO MENSAJE
     .BY $70,$02,$70,$02,$70,$70
     .BY $F0,$F0,$F0,$F0,$F0,$F0
@@ -49,11 +49,9 @@ DLERR
     .BY $41
     .WO DLIST
 MENSAJE
-    .SB "      "
-    .SB " "
-    .SB +128,"prisma"
-    .SB "            "
-    .SB " PROGRAMAS PARA COMPUTADORES       "
+tit01lo
+    .sb "********************"
+    .SB "      PROGRAMAS PARA COMPUTADORES       "
     .SB "          LINEA ATARI INJEKTOR          "
 NAME
     .SB "  NOMBRE DEL JUEGO  "

@@ -46,7 +46,8 @@ SIOV4
 	.by $60,$00,$52,$40
 	.wo $CC00
 	.by $23,$00
-	.wo $03bc		;.wo l_load
+	;.wo $03bc		;
+	.wo l_load
 	.by $00,$80
 FIN
 .endp

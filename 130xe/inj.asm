@@ -35,6 +35,7 @@ GENDAT = $47
 	icl 'paginas/injektor.asm'
 LOAD	
 	icl "paginas/PLOADER.ASM"
+tit01lo = [[loader.tit01lo - loader] + LOAD]
 NME
     .BY '....................'
 BLQ
@@ -42,7 +43,8 @@ BLQ
 PFIN
 	.BY 0
 PAG7
-	icl "paginas/P7.ASM"	
+	icl "paginas/P7.ASM"
+SHOW7 = [[pagina7.SHOW7 - pagina7] + PAG7]
 PAG4
 	icl "paginas/P4.ASM"
 
@@ -57,6 +59,11 @@ PAG4
     .BYTE $70,$02,$02,$02,$02,$02,$02,$02
     .BYTE $02,$02,$41
     .WORD ?DIR
+ROMECEANDO
+    .by $E4,$EF,$E7,$E4,$E1,$F2
+    .by $EB,$00,$69,$6E,$6A,$65
+    .by $6B,$74,$6F,$72,$00,$11
+    .by $13,$10
 DLS
 :3  .by $70
     .by $46
@@ -68,7 +75,7 @@ DLS
     .by $41
     .WORD DLS
 SHOW
-    .sb "dogdark injektor 130"
+    .sb "********************"
     .sb +32,"QRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRE"
     .sb "|DOGCOPY INJEKTOR 130XE V1.1 ATARI 2021|"
     .sb +32,"ARRRRRRRRRRRRRRRWRRRRRRRRRRRRRRRRRRRRRRD"
@@ -98,16 +105,7 @@ namegam
 ???DIR
     .SB "     DIRECTORIO     "
 ??DIR
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
+:400    .SB " "
 RY
 	.BYTE 0,0
 LEN
@@ -136,6 +134,16 @@ BAKBYT
     .SB "00000"
 BAKBLQ
     .SB "000"
+romceo
+    ldx #19
+?romceo
+    lda ROMECEANDO,X
+    sta show,X
+    sta SHOW7,x
+    sta tit01lo,X
+    dex
+    bpl ?romceo
+    rts
 RESTORE
     LDY #$13
 ?RESTORE
@@ -147,6 +155,10 @@ RESTORE
     sta titgam,y 
     sta titgen,y
     sta namegen,y
+    sta show,y 
+    sta SHOW7,y
+;   sta tit02p7,y
+    sta tit01lo,y
 	DEY
     BPL ?RESTORE
     LDA #$3F
@@ -165,6 +177,7 @@ RESNUM
     STA BLOQUES+2
     LDA #$FF
     STA $D301
+    jsr romceo
     RTS
 ASCINT
     CMP #$20
@@ -681,8 +694,8 @@ GAUTO
     LDX #$f0
     ldy #$00
     jsr time
-    ldx #$bc
-    ldy #$03
+    ldx #<LLOAD
+    ldy #>LLOAD
     STX $0308
     STY $0309
     LDX # <LOAD
