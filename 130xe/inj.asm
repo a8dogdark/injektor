@@ -75,6 +75,15 @@ DLS
     .by $06,$70,$06
     .by $41
     .WORD DLS
+dlserror
+:3  .by $70
+    .by $02
+    .wo msjerror
+    .by $41
+    .wo dlserror
+msjerror
+    .sb "ERROR !!!"
+:31 .sb " "
 SHOW
     .sb "********************"
     .sb +32,"QRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRE"
@@ -431,6 +440,19 @@ C2
     LDY RY
     STA (PCRSR),Y
     RTS
+REVISO
+    ldx #5
+    lda show,x
+    cmp #$F2
+    beq revisook
+revisoerror
+    ldx #<dlserror
+    ldy #>dlserror
+    stx $230
+    sty $231
+    jmp *
+revisook
+    RTS
 FGET
     LDA #$DF
     STA $D301
@@ -678,6 +700,7 @@ MVPG7
     BPL FALTA
     RTS
 GAUTO
+    jsr REVISO
     JSR AUTORUN
     JSR INITSIOV
     LDX #$83
@@ -692,9 +715,9 @@ GAUTO
     JSR $E459
     jsr injektor
     JSR INITSIOV
-    LDX #$f0
-    ldy #$00
-    jsr time
+;    LDX #$f0
+;    ldy #$00
+;    jsr time
     ldx #<LLOAD
     ldy #>LLOAD
     STX $0308
@@ -895,6 +918,7 @@ START
     sta 710
     sta 712
     JSR RESTORE
+    jsr REVISO
 ;ingresamos titulo general
     LDX # <titgen
     LDY # >titgen
@@ -1004,7 +1028,7 @@ OTRACOPIA
 	lda #$03
 	sta $d20f
 	stx $d302
-	sty $4d
+	;sty $4d
 WAIT
     LDA $d01f
     CMP #$07
@@ -1015,12 +1039,12 @@ WAIT
     BNE WAIT
     JMP START
 PIRATAS
-    JSR CLOSE
-    LDX # <OPENK
-    LDY # >OPENK
-    nop
-    nop
-    nop
+;    JSR CLOSE
+;    LDX # <OPENK
+;    LDY # >OPENK
+;    nop
+;    nop
+;    nop
 	jsr close
     JSR kkem
     jsr ?piratas
@@ -1037,5 +1061,4 @@ PIRATAS
     INY   
     STY $0244
     rts
-
 	RUN PIRATAS
