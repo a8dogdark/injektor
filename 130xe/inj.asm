@@ -36,6 +36,7 @@ GENDAT = $47
 LOAD	
 	icl "paginas/PLOADER.ASM"
 MENSAJE = [[loader.MENSAJE - loader] + LOAD]
+TITLO01 = [[loader.TITLO01 - loader] + LOAD]
 NME
     .BY '....................'
 BLQ
@@ -157,7 +158,7 @@ RESTORE
     sta namegen,y
     sta show,y 
     sta SHOW7,y
-;   sta tit02p7,y
+    sta TITLO01,Y
     sta MENSAJE,y
 	DEY
     BPL ?RESTORE
@@ -913,6 +914,7 @@ START
 WRITEG
     LDA titgen,X
     STA namegen,Y
+    sta TITLO01,y
     INY
     INX
     CPX RY

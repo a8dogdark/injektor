@@ -40,23 +40,25 @@ LSIOV
 DLIST
     .BY $70,$70,$70,$46
     .WO MENSAJE
-    .BY $70,$02,$70,$02,$70,$70
-    .BY $70,$70,$70,$70,$70,$06
-    .BY $70,$42
+    .BY $70,$70,$02,$70,$70
+    .BY $70,$70,$70,$70,$06,$70,$70,$06,$70,$06
+    .BY $70,$70,$70,$70,$70,$42
 DLERR
     .WO DERROR
     .BY $41
     .WO DLIST
 MENSAJE
     .sb "********************"
-    .SB "      PROGRAMAS PARA COMPUTADORES       "
-    .SB "          LINEA ATARI INJEKTOR          "
+    .SB "SISTEMA INJEKTOR PARA COMPUTADORES ATARI"
+    .sb +128,"      presenta      "
+TITLO01
+    .SB "********************"
 NAME
-    .SB "  NOMBRE DEL JUEGO  "
+    .SB "********************"
 DERROR
-    .SB "     Cargara dentro de "
+    .sb "      Quedan "
 CONTADOR
-    .SB "    Bloques.     "
+    .sb "000 bloques restantes      "
 merr
     .SB " Un momento porfavor, buscando respaldo "
 TIEMPO
