@@ -35,7 +35,7 @@ GENDAT = $47
 	icl 'paginas/injektor.asm'
 LOAD	
 	icl "paginas/PLOADER.ASM"
-tit01lo = [[loader.tit01lo - loader] + LOAD]
+MENSAJE = [[loader.MENSAJE - loader] + LOAD]
 NME
     .BY '....................'
 BLQ
@@ -140,7 +140,7 @@ romceo
     lda ROMECEANDO,X
     sta show,X
     sta SHOW7,x
-    sta tit01lo,X
+    sta MENSAJE,X
     dex
     bpl ?romceo
     rts
@@ -158,7 +158,7 @@ RESTORE
     sta show,y 
     sta SHOW7,y
 ;   sta tit02p7,y
-    sta tit01lo,y
+    sta MENSAJE,y
 	DEY
     BPL ?RESTORE
     LDA #$3F

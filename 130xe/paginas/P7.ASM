@@ -20,7 +20,7 @@ INICIO
 	stx $D402
 	sty $0231
 	sty $d403
-	sta $41
+	;sta $41
 	jsr INJK7
 	ldx #$90
 	ldy #$00
