@@ -1,10 +1,11 @@
 ;load_init =$CBFE
-load_init =$CC00
+;load_init =$CC00
+load_init =$06FE
 ;
-l_load = [.len loader]
+l_load = [[.len loader]+24]
 
 .proc	loader,load_init
-BAFER = $0700
+BAFER = $0400
 BUFAUX = $0800
 ?RUTINA = BUFAUX+JUMP-RUTINA
 ;
@@ -38,30 +39,29 @@ LSIOV
     .WO $0100
     .BY $00,$80
 DLIST
-    .BY $70,$70,$70,$47
+    .BY $70,$70,$70,$46
     .WO MENSAJE
-    .BY $70,$02,$70,$02,$70,$70
-    .BY $F0,$F0,$F0,$F0,$F0,$F0
-    .BY $70,$70,$70,$70,$70,$06
-    .BY $70,$42
+    .BY $70,$70,$02,$70,$70
+    .BY $70,$70,$70,$70,$06,$70,$70,$06,$70,$06
+    .BY $70,$70,$70,$70,$70,$42
 DLERR
     .WO DERROR
     .BY $41
     .WO DLIST
 MENSAJE
-    .SB "      "
-    .SB " "
-    .SB +128,"prisma"
-    .SB "            "
-    .SB " PROGRAMAS PARA COMPUTADORES       "
-    .SB "          LINEA ATARI INJEKTOR          "
+    .sb "********************"
+    .SB "SISTEMA INJEKTOR PARA COMPUTADORES ATARI"
+    .sb +128,"      presenta      "
+TITLO01
+    .SB "********************"
 NAME
-    .SB "  NOMBRE DEL JUEGO  "
+    .SB "********************"
 DERROR
-    .SB "     Cargara dentro de "
+    .sb "      Quedan "
 CONTADOR
-    .SB "    Bloques.      "
-    .SB "Un momento porfavor, buscando respaldo "
+    .sb "000 bloques restantes      "
+merr
+    .SB " Un momento porfavor, buscando respaldo "
 TIEMPO
     LDA #$40
     STA $D40E
@@ -113,66 +113,74 @@ NEWDL
     STX $D402
     STA $0231
     STA $D403
+
     LDA #$22
     STA $022F
     STA $D400
+
     LDA #$E0
     STA $02F4
     STA $D409
+
     LDA #$02
     STA $02F3
     STA $D401
-    LDX #$04
-COLORLOOP
-    LDA TABLA,X
-    STA $02C4,X
-    STA $D016,X
-    DEX
-    BPL COLORLOOP
-    LDX #<COLORDAT
-    LDY #>COLORDAT
-    LDA #$06
-    JSR $E45C
-    LDX #$DB
-    LDY #$CD
-    LDA #$C0
-    STX $0200
-    STY $0201
-    STA $D40E
-    RTS
-COLORDAT
-    LDA #$00
-    STA NOSEPO
-    LDA $02C6
-    STA NOSEPO2
-    JMP $E45F
-?COLORDAT
-    PHA
-    TXA
-    PHA
-    LDX NOSEPO
-    LDA NOSEPO1,X
-    STA $D40A
+
+    LDA #$02
+;    STA $D016
+    STA $D018
     STA $D01A
-    INC NOSEPO
-    PLA
-    TAX
-    PLA
-    RTI
-NOSEPO
-    .BY $00
-NOSEPO1
-    .BY $52,$72,$B4,$EA,$32
-NOSEPO2
-    .BY $FF,$FF
+;    LDX #$04
+;COLORLOOP
+;    LDA TABLA,X
+;    STA $02C4,X
+;    STA $D016,X
+;    DEX
+;    BPL COLORLOOP
+;    LDX #<COLORDAT
+;    LDY #>COLORDAT
+;    LDA #$06
+;    JSR $E45C
+;    LDX #<?COLORDAT ;$DB
+;    LDY #>?COLORDAT ;$CD
+;    LDA #$C0
+;    STX $0200
+;    STY $0201
+;    STA $D40E
+    RTS
+;COLORDAT
+;    LDA #$00
+;    STA NOSEPO
+;    LDA $02C6
+;    STA NOSEPO2
+;    JMP $E45F
+;?COLORDAT
+;    PHA
+;    TXA
+;    PHA
+;    LDX NOSEPO
+;    LDA NOSEPO1,X
+;    STA $D40A
+;    STA $D01A
+;    INC NOSEPO
+;    PLA
+;    TAX
+;    PLA
+;    RTI
+;NOSEPO
+;    .BY $00
+;NOSEPO1
+;    .BY $52,$72,$B4,$EA,$32
+;NOSEPO2
+;    .BY $FF,$FF
 TABLA
     .BY $28,$CA,$00,$44,$00
 ERROR
-    LDX #$F3
-    LDA #$CC
-    STX $CC4E
-    STA $CC4F
-    JSR $CE0E
+    LDX #<merr  ;$F3
+    LDA #>merr  ;$CC
+    STX DLERR   ;$CC4E
+    STA DLERR+1 ;$CC4F
+    JSR VUELTA  ;$CE0E
 	JMP GRAB
 VUELTA
     LDA #$3C
@@ -232,10 +240,10 @@ MSIO
     BEQ RETURN
     JMP ?GRAB
 RETURN
-	LDX #$CB
-    LDA #$CC
-    STX $CC4E
-    STA $CC4F
+	LDX #<DERROR    ;$CB
+    LDA #>DERROR    ;$CC
+    STX DLERR   ;$CC4E
+    STA DLERR+1 ;$CC4F
     LDA BAFER+255
     STA NBYTES
     LDX #$02
@@ -257,12 +265,12 @@ C02
 BYE
     JSR TIEMPO
     LDA #$4C
-    STA $CF46
+    STA RUTINA+10   ;$CF46
     LDA #$E0
-    STA $CF50
+    STA RUTINA+20   ;$CF50
     LDX #$00
     TXS
-    JMP $CF2E
+    JMP RINIT   ;$CF2E
 START
     LDY NBYTES
     JSR ?INICIO
@@ -361,6 +369,13 @@ RECUPERO3
     LDA FINRECUPERO+23
     STX $41
     STA PFIN
+REVISO
+    LDX #5
+    LDA MENSAJE,x
+    CMP #$F2
+    BEQ RECUPERO04
+    JMP *
+RECUPERO04
     LDY #$7F
     LDA #$00
 RECUPERO4

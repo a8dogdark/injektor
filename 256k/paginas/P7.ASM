@@ -3,8 +3,8 @@
 
 l_pag7=[.len pagina7]
 
-.proc pagina7,$0700
-kem_buffer =$b000
+;.proc pagina7,$0700
+.proc pagina7,$2000
 INICIO
 	.by 0
 	.by [l_pag7+127]/128
@@ -21,7 +21,7 @@ INICIO
 	stx $D402
 	sty $0231
 	sty $d403
-	sta $41
+	;sta $41
 	jsr INJK7
 	ldx #$90
 	ldy #$00
@@ -85,14 +85,12 @@ FINAL7
 	.by $AA,$8F,$04,$D2,$AF,$32
 	.by $02,$8F,$0F,$D2,$18,$60
 DLS7        
-	.by $70,$70,$70,$70,$70,$70
-	.by $70,$70,$70,$70,$70,$70
-	.by $70,$70,$47
-	.wo $07C7
+	.by $70,$70,$70,$46
+	.wo SHOW7
 	.by $41
-	.wo $07B3
-SHOW7       
-	.sb '- FAST-LOAD PRISMA -'
+	.wo DLS7
+SHOW7 
+	.sb '********************'
 PAUSA7      
 	stx $021C
 	sty $021D

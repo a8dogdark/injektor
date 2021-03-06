@@ -3,7 +3,7 @@
 ;
 pagina4_init=$03FD
 //	org pagina4_init
-.proc pagina4, pagina4_init
+.proc pagina4,$03FD
 GENDAT = $47
 	.BYTE $55,$55,$FE
 INICIO
@@ -38,15 +38,16 @@ LOOP4
 	bne LOOP4
 TABLA4      
 	.sb +128,'ERROR'
-	.SB ' ¡¡¡ CA'
+	.SB '!!!! CA'
 	.sb 'RGUE N'
 	.sb 'UEVAME'
 	.sb 'NTE'
 SIOV4       
 	.by $60,$00,$52,$40
-	.wo $CC00
+	.wo $06FE
 	.by $23,$00
-	.wo $03bc		;.wo l_load
+	;.wo $03bc		;
+	.wo l_load
 	.by $00,$80
 FIN
 .endp

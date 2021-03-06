@@ -35,6 +35,8 @@ GENDAT = $47
 	icl 'paginas/injektor.asm'
 LOAD	
 	icl "paginas/PLOADER.ASM"
+MENSAJE = [[loader.MENSAJE - loader] + LOAD]
+TITLO01 = [[loader.TITLO01 - loader] + LOAD]
 NME
     .BY '....................'
 BLQ
@@ -42,16 +44,11 @@ BLQ
 PFIN
 	.BY 0
 PAG7
-	icl "paginas/p7.asm"	
+	icl "paginas/P7.ASM"
+SHOW7 = [[pagina7.SHOW7 - pagina7] + PAG7]
 PAG4
-	icl "paginas/p4.asm"
-DLS
-    .BYTE $70,$70,$70,$46
-    .WORD SHOW
-	.BYTE $70,$70,$02,$70,$70,$02,$02,$70
-    .BYTE $70,$70,$06,$70,$70,$70,$02,$70
-    .BYTE $70,$70,$06,$70,$70,$70,$02,$41
-    .WORD DLS
+	icl "paginas/P4.ASM"
+
 ; -------------------------
 ; DEFINICION DEL DISPLAY
 ; PARA DIRECTORIO
@@ -63,67 +60,71 @@ DLS
     .BYTE $70,$02,$02,$02,$02,$02,$02,$02
     .BYTE $02,$02,$41
     .WORD ?DIR
+ROMECEANDO
+    .by $E4,$EF,$E7,$E4,$E1,$F2
+    .by $EB,$00,$69,$6E,$6A,$65
+    .by $6B,$74,$6F,$72,$00,$12
+    .by $15,$16
+DLS
+:3  .by $70
+    .by $46
+    .WORD SHOW
+:2	.by $70
+:13  .by $02
+:4  .by $70
+    .by $06,$70,$06
+    .by $41
+    .WORD DLS
+dlserror
+:3  .by $70
+    .by $02
+    .wo msjerror
+    .by $41
+    .wo dlserror
+msjerror
+    .sb "ERROR !!!"
+:31 .sb " "
 SHOW
-    .SB "NHP INJEKTOR VER "
-    .SB "6.0 "
-    .SB +128,"  THE LEECH & PARCHE NEGRO CHILE 1991 "
-    .SB " "
-    .SB +32,"RRRRRRRRRRRRRRRR"
-    .SB +128,"1"
-    .SB "2"
-    .SB +128,"3"
-    .SB "4"
-    .SB +128,"5"
-    .SB "6"
-    .SB +128,"7"
-    .SB "8"
-    .SB +128,"9"
-    .SB "0"
-    .SB +128,"1"
-    .SB "2"
-    .SB +128,"3"
-    .SB "4"
-    .SB +128,"5"
-    .SB "6"
-    .SB +128,"7"
-    .SB "8"
-    .SB +128,"9"
-    .SB "0"
-    .SB +32,"RRRR"
-    .SB +128,"NOMBRE CARATULA:"
-CRSR
-    .SB "_                   "
-    .SB "    "
-NAME
-    .SB "                    "
-    .SB +128,"FILE:"
+    .sb "********************"
+    .sb +32,"QRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRE"
+    .sb "|DOGCOPY INJEKTOR 256K  V1.1 ATARI 2021|"
+    .sb +32,"ARRRRRRRRRRRRRRRWRRRRRRRRRRRRRRRRRRRRRRD"
+    .sb "|MEMORIA        | "
+tmemoria
+    .sb "******               |"
+    .sb "|BANCOS         | "
+tbancos
+    .sb "**                   |"
+    .sb "|PORTB          | "
+tportb
+    .sb "***                  |"
+    .sb "|TITULO GENERAL | "
+titgen
+    .sb "******************** |"
+    .sb "|TITULO JUEGO   | "
+titgam
+    .sb "******************** |"
+    .sb "|FUENTE         | "
 FILE
-    .SB "_                   "
-    .SB "               "
-    .SB "      COPIAS "
-TOTALCOPIAS
-    .SB "0      "
-    .SB +128,"BYTES LEIDOS:"
-    .SB " "
+    .sb "******************** |"
+    .sb "|BYTES          | "
 BYTES
-    .SB "*****        "
-    .SB +128,"BLOQUES:"
-    .SB " "
+    .sb "******               |"
+    .sb "|BLOQUES        | "
 BLOQUES
-    .SB "*** "
+    .sb "***                  |"
+    .sb "|COPIAS         | "
+TOTALCOPIAS
+    .sb "*                    |"
+    .sb +32,"ZRRRRRRRRRRRRRRRXRRRRRRRRRRRRRRRRRRRRRRC"
+namegen
+    .sb "--ACA VA EL TITULO--"
+namegam
+    .sb "--ACA VA EL TITULO--"
 ???DIR
     .SB "     DIRECTORIO     "
 ??DIR
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
-	.SB "                                        "
+:400    .SB " "
 RY
 	.BYTE 0,0
 LEN
@@ -152,33 +153,40 @@ BAKBYT
     .SB "00000"
 BAKBLQ
     .SB "000"
+romceo
+    ldx #19
+?romceo
+    lda ROMECEANDO,X
+    sta show,X
+    sta SHOW7,x
+    sta MENSAJE,X
+    dex
+    bpl ?romceo
+    rts
 RESTORE
     LDY #$13
 ?RESTORE
     LDA #$20
     STA ??FILE,Y
     LDA #$00
-    STA NAME,Y
+    STA namegam,Y
     STA FILE,Y
+    sta titgam,y 
+    sta titgen,y
+    sta namegen,y
+    sta show,y 
+    sta SHOW7,y
+    sta TITLO01,Y
+    sta MENSAJE,y
 	DEY
     BPL ?RESTORE
-    LDY #$17
-??RESTORE
-    LDA #$00
-    STA CRSR,Y
-    DEY
-    BPL ??RESTORE
-    LDY #$22
-???RESTORE
-    LDA #$00
-    STA FILE,Y
-    DEY
-    BPL ???RESTORE
     LDA #$3F
-    STA CRSR
+    STA titgam
+    sta titgen
     STA FILE
     LDA #$10
-    LDY #$04
+    sta totalcopias
+    LDY #$05
 RESNUM
     STA BYTES,Y
     DEY
@@ -188,6 +196,7 @@ RESNUM
     STA BLOQUES+2
     LDA #$FF
     STA $D301
+    jsr romceo
     RTS
 ASCINT
     CMP #$20
@@ -278,9 +287,9 @@ OPEN
     LDX #$10
     LDA #$03
     STA $0342,X
-    LDA # <?FILE
+    LDA # <??FILE
     STA $0344,X
-    LDA # >?FILE
+    LDA # >??FILE
     STA $0345,X
     LDA #$04
     STA $034A,X
@@ -440,6 +449,19 @@ C2
     LDY RY
     STA (PCRSR),Y
     RTS
+REVISO
+    ldx #5
+    lda show,x
+    cmp #$F2
+    beq revisook
+revisoerror
+    ldx #<dlserror
+    ldy #>dlserror
+    stx $230
+    sty $231
+    jmp *
+revisook
+    RTS
 FGET
     LDA #$DF
     STA $D301
@@ -520,7 +542,7 @@ LOPFGET
 PONBYTES
     JSR NBYTES
     STY RY
-    LDY #$04
+    LDY #$05
 ?PONBYTES
     LDA LBUFF,X
     AND #$5F
@@ -616,7 +638,7 @@ PONDATA
     STA BLQ+2
     LDY #$13
 ?PONDATA
-	LDA NAME,Y
+	LDA namegam,Y
 	STA NME,Y
 	DEY
 	BPL ?PONDATA   
@@ -687,6 +709,7 @@ MVPG7
     BPL FALTA
     RTS
 GAUTO
+    jsr REVISO
     JSR AUTORUN
     JSR INITSIOV
     LDX #$83
@@ -701,11 +724,11 @@ GAUTO
     JSR $E459
     jsr injektor
     JSR INITSIOV
-    LDX #$f0
-    ldy #$00
-    jsr time
-    ldx #$bc
-    ldy #$03
+;    LDX #$f0
+;    ldy #$00
+;    jsr time
+    ldx #<LLOAD
+    ldy #>LLOAD
     STX $0308
     STY $0309
     LDX # <LOAD
@@ -726,7 +749,7 @@ time
 	bne ?time
 	rts
 REST
-    LDY #$04
+    LDY #$05
 ??REST
     LDA BYTES,Y
     STA BAKBYT,Y
@@ -740,7 +763,7 @@ REST
     BPL ???REST
     RTS
 ?REST
-    LDY #$04
+    LDY #$05
 ????REST
     LDA BAKBYT,Y
     STA BYTES,Y
@@ -900,14 +923,39 @@ START
     LDY # >DLS
     STX $0230
     STY $0231
-    LDA #$90
-    STA $02C8
-    STA $02C6
-    LDA #$CA
-    STA $02C5
+    lda #$02
+    sta 710
+    sta 712
     JSR RESTORE
-    LDX # <CRSR
-    LDY # >CRSR
+    jsr REVISO
+;ingresamos titulo general
+    LDX # <titgen
+    LDY # >titgen
+    STX PCRSR
+    STY PCRSR+1
+    JSR RUTLEE
+    TYA
+    BEQ NOTITLEG
+    LSR 
+    STA RY+1
+    LDA #$0a
+    SEC
+    SBC RY+1
+    STA RY+1
+    LDX #$00
+    LDY RY+1
+WRITEG
+    LDA titgen,X
+    STA namegen,Y
+    sta TITLO01,y
+    INY
+    INX
+    CPX RY
+    BNE WRITEG
+NOTITLEG
+;ingresamos titul juego
+    LDX # <titgam
+    LDY # >titgam
     STX PCRSR
     STY PCRSR+1
     JSR RUTLEE
@@ -922,8 +970,8 @@ START
     LDX #$00
     LDY RY+1
 WRITE
-    LDA CRSR,X
-    STA NAME,Y
+    LDA titgam,X
+    STA namegam,Y
     INY
     INX
     CPX RY
@@ -989,7 +1037,7 @@ OTRACOPIA
 	lda #$03
 	sta $d20f
 	stx $d302
-	sty $4d
+	;sty $4d
 WAIT
     LDA $d01f
     CMP #$07
@@ -1000,12 +1048,12 @@ WAIT
     BNE WAIT
     JMP START
 PIRATAS
-    JSR CLOSE
-    LDX # <OPENK
-    LDY # >OPENK
-    nop
-    nop
-    nop
+;    JSR CLOSE
+;    LDX # <OPENK
+;    LDY # >OPENK
+;    nop
+;    nop
+;    nop
 	jsr close
     JSR kkem
     jsr ?piratas
@@ -1022,5 +1070,4 @@ PIRATAS
     INY   
     STY $0244
     rts
-
 	RUN PIRATAS
